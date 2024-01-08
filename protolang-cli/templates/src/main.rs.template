@@ -1,3 +1,17 @@
-fn main() {
+use protolang::sources;
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Hello {}", "{{name}}");
+    let sources = sources("protocol")?;
+    
+    // compile to get the werbolg CompilationUnit
+
+    loop {
+        // wait for event
+        // propagate event to actors
+        // execute werbolg machines when needed
+        // etc
+        break; 
+    }
+    Ok(())
 }
