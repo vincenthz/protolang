@@ -9,4 +9,4 @@ werbolg-exec = { version = "0.1", git = "https://github.com/vincenthz/werbolg" }
 werbolg-core = { version = "0.1", git = "https://github.com/vincenthz/werbolg" }
 werbolg-lang-common = { version = "0.1", git = "https://github.com/vincenthz/werbolg" }
 werbolg-lang-rusty = { version = "0.1", git = "https://github.com/vincenthz/werbolg" }
-protolang = { version = "0.1", path = "https://github.com/vincenthz/protolang" }
+protolang = { version = "0.1", git = "https://github.com/vincenthz/protolang" }
