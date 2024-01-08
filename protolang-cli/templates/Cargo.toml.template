@@ -1,0 +1,12 @@
+[package]
+name = "{{name}}"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+werbolg-compile = { version = "0.1", git = "https://github.com/vincenthz/werbolg" }
+werbolg-exec = { version = "0.1", git = "https://github.com/vincenthz/werbolg" }
+werbolg-core = { version = "0.1", git = "https://github.com/vincenthz/werbolg" }
+werbolg-lang-common = { version = "0.1", git = "https://github.com/vincenthz/werbolg" }
+werbolg-lang-rusty = { version = "0.1", git = "https://github.com/vincenthz/werbolg" }
+protolang = { version = "0.1", path = "https://github.com/vincenthz/protolang" }
