@@ -1,13 +1,13 @@
+mod environ;
+mod value;
+
+use std::{fs, path::Path};
 use werbolg_compile::compile;
 use werbolg_core::Module;
 use werbolg_exec::{ExecutionEnviron, ExecutionParams};
 use werbolg_lang_rusty::module;
 
-use std::{fs, path::Path};
-
-mod value;
-
-pub use value::Value;
+pub use self::value::Value;
 
 #[derive(Clone)]
 pub struct ProtocolState {}
