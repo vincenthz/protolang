@@ -1,17 +1,17 @@
-use protolang::sources;
+use protolang::{compiles, create_env, sources};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("Hello {}", "{{name}}");
+    let mut env = create_env();
     let sources = sources("protocol")?;
-    
-    // compile to get the werbolg CompilationUnit
+    let units = compiles(&mut env, sources)?;
 
-    loop {
-        // wait for event
-        // propagate event to actors
-        // execute werbolg machines when needed
-        // etc
-        break; 
+    // compile to get the werbolg CompilationUnit
+    for unit in units {
+        let mut out = String::new();
+        werbolg_compile::code_dump(&mut out, &unit.code, &unit.funs)
+            .expect("writing to string work");
+        println!("{}", out);
     }
+
     Ok(())
 }
