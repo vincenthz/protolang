@@ -2,6 +2,18 @@ use crate::{Environment, ExecutionMachine, Value, NIF};
 use werbolg_core::{AbsPath, Ident, Namespace};
 use werbolg_exec::{ExecutionError, NIFCall};
 
+fn nil(em: &mut ExecutionMachine<'_, '_>) -> Result<Value, ExecutionError> {
+    let (_, args) = em.stack.get_call_and_args(em.current_arity);
+
+    if !args.is_empty() {
+        Err(ExecutionError::UserPanic {
+            message: "`nil' function does not need any arguments".to_string(),
+        })
+    } else {
+        Ok(Value::Unit)
+    }
+}
+
 fn broadcast(em: &mut ExecutionMachine<'_, '_>) -> Result<Value, ExecutionError> {
     let (_, args) = em.stack.get_call_and_args(em.current_arity);
     let mut args = args.iter();
@@ -37,6 +49,7 @@ pub fn create_env<'m, 'e>() -> Environment<'m, 'e> {
     }
 
     let mut env = Environment::new();
+    add_raw_nif!(env, "nil", nil);
     add_raw_nif!(env, "broadcast", broadcast);
 
     env
