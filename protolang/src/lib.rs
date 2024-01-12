@@ -20,7 +20,7 @@ pub struct ProtocolState {}
 pub struct Actor {}
 
 pub fn source<S: AsRef<Path>>(path: S) -> Result<Module, Box<dyn std::error::Error>> {
-    let content = std::fs::read_to_string(&path.as_ref()).expect("file read");
+    let content = std::fs::read_to_string(path.as_ref()).expect("file read");
     let file_unit = FileUnit::from_string(path.as_ref().display().to_string(), content);
 
     let module = rusty::module(&file_unit).map_err(|e| format!("{:?}", e))?;
