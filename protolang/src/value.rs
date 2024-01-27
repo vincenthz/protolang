@@ -1,13 +1,14 @@
 use werbolg_core::{ConstrId, ValueFun};
 use werbolg_exec::{ExecutionError, Valuable, ValueKind};
 
-pub type ValueInt = u64;
+pub type ValueInt = num_bigint::BigInt;
 
 #[derive(Clone, Debug)]
 pub enum Value {
     Unit,
     Bool(bool),
     Integral(ValueInt),
+    Actor(u32),
     Fun(ValueFun),
 }
 
@@ -17,6 +18,7 @@ impl Value {
             Value::Unit => UNIT_KIND,
             Value::Bool(_) => BOOL_KIND,
             Value::Integral(_) => INT_KIND,
+            Value::Actor(_) => ACTOR_KIND,
             Value::Fun(_) => FUN_KIND,
         }
     }
@@ -26,6 +28,7 @@ pub const UNIT_KIND: ValueKind = "    unit";
 pub const BOOL_KIND: ValueKind = "    bool";
 pub const INT_KIND: ValueKind = "     int";
 pub const FUN_KIND: ValueKind = "     fun";
+pub const ACTOR_KIND: ValueKind = "   actor";
 
 impl Valuable for Value {
     fn descriptor(&self) -> werbolg_exec::ValueKind {
@@ -66,7 +69,7 @@ impl Valuable for Value {
 impl Value {
     pub fn int(&self) -> Result<ValueInt, ExecutionError> {
         match self {
-            Value::Integral(o) => Ok(*o),
+            Value::Integral(o) => Ok(o.clone()),
             _ => Err(ExecutionError::ValueKindUnexpected {
                 value_expected: INT_KIND,
                 value_got: self.descriptor(),

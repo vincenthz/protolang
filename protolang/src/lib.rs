@@ -2,10 +2,10 @@ mod allocator;
 mod environ;
 mod value;
 
-use std::{ffi::OsString, fs, io, path::Path, process::exit};
+use std::{fs, path::Path, process::exit};
 use werbolg_compile::CompilationState;
 use werbolg_core::{Ident, Literal, Module, Namespace};
-use werbolg_lang_common::{ParseError, Source};
+use werbolg_lang_common::Source;
 use werbolg_lang_rusty as rusty;
 
 pub use self::{allocator::Allocator, environ::create_env, value::Value};
@@ -63,7 +63,8 @@ pub fn sources<S: AsRef<Path>>(dir: S) -> Vec<(Namespace, Source, Module)> {
     let path_display = format!("{}", dir.as_ref().display());
     let sources = match sources_api(dir) {
         Err(r) => {
-            todo!()
+            eprintln!("sources I/O error in {}\n{:?}", r, path_display);
+            exit(1)
         }
         Ok(t) => t,
     };
@@ -102,7 +103,8 @@ pub fn compile(
     for (ns, _, module) in modules.into_iter() {
         match compiler.add_module(&ns, module) {
             Err(e) => {
-                todo!()
+                eprintln!("compilation error while adding module {:?}\n{:?}", ns, e);
+                exit(1)
             }
             Ok(()) => {}
         }
@@ -110,7 +112,8 @@ pub fn compile(
 
     match compiler.finalize(env) {
         Err(e) => {
-            todo!()
+            eprintln!("compilation error while generating code\n{:?}", e);
+            exit(1)
         }
         Ok(cunit) => cunit,
     }
