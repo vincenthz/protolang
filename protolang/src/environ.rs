@@ -1,5 +1,6 @@
 use crate::{Allocator, Environment, ExecutionMachine, ProtocolState, Value, NIF};
 use num_traits::identities::Zero;
+use werbolg_compile::CallArity;
 use werbolg_core::{AbsPath, Ident, Literal, Namespace};
 use werbolg_exec::{ExecutionError, NIFCall};
 
@@ -77,19 +78,16 @@ pub fn module_arithmetics<'m, 'e>() -> Vec<NIFCall<'m, 'e, Allocator, Literal, P
 
 pub fn create_env<'m, 'e>() -> Environment<'m, 'e> {
     macro_rules! add_raw_nif {
-        ($env:ident, $i:literal, $e:expr) => {
-            let nif = NIF {
-                name: $i,
-                call: NIFCall::Raw($e),
-            };
+        ($env:ident, $i:literal, $arity:literal, $e:expr) => {
+            let nif = NIFCall::Raw($e).info($i, CallArity::try_from($arity as usize).unwrap());
             let path = AbsPath::new(&Namespace::root(), &Ident::from($i));
             $env.add_nif(&path, nif);
         };
     }
 
     let mut env = Environment::new();
-    add_raw_nif!(env, "nil", nil);
-    add_raw_nif!(env, "broadcast", broadcast);
+    add_raw_nif!(env, "nil", 0, nil);
+    add_raw_nif!(env, "broadcast", 2, broadcast);
 
     env
 }
