@@ -1,3 +1,7 @@
+//! micro 'template' engine
+//!
+//! Substitute all instances of {{variable}} by the associated
+//! value of 'variable' in a hashmap
 use std::collections::HashMap;
 
 pub fn template(template: &str, vars: &HashMap<String, String>) -> Result<String, String> {
@@ -10,6 +14,7 @@ pub fn template(template: &str, vars: &HashMap<String, String>) -> Result<String
     out.push_str(first);
 
     while let Some(chunk) = remaining.next() {
+        // if no end pos, then we push the literal {{ and the remaining text
         let end_var = chunk.find("}}");
         let Some(end_pos) = end_var else {
             out.push_str("{{");
@@ -18,6 +23,7 @@ pub fn template(template: &str, vars: &HashMap<String, String>) -> Result<String
         };
 
         let (before, after) = chunk.split_at(end_pos);
+        // if the variable is not found, return an error with the name of the missing variable
         let Some(var_value) = vars.get(before) else {
             return Err(before.to_string());
         };
