@@ -10,10 +10,10 @@ use werbolg_lang_rusty as rusty;
 
 pub use self::{allocator::Allocator, environ::create_env, value::Value};
 
-pub type NIF<'m, 'e> = werbolg_exec::NIF<'m, 'e, Allocator, Literal, ProtocolState, Value>;
-pub type Environment<'m, 'e> = werbolg_compile::Environment<NIF<'m, 'e>, Value>;
-pub type ExecutionMachine<'m, 'e> =
-    werbolg_exec::ExecutionMachine<'m, 'e, Allocator, Literal, ProtocolState, Value>;
+pub type NIF = werbolg_exec::NIF<Allocator, Literal, ProtocolState, Value>;
+pub type Environment = werbolg_compile::Environment<NIF, Value>;
+pub type ExecutionMachine =
+    werbolg_exec::ExecutionMachine<Allocator, Literal, ProtocolState, Value>;
 
 use werbolg_lang_common::{Report, ReportKind};
 
@@ -72,7 +72,20 @@ pub fn sources<S: AsRef<Path>>(dir: S) -> Vec<(Namespace, Source, Module)> {
     sources
         .into_iter()
         .map(|(n, source)| match rusty::module(&source.file_unit) {
-            Err(perr) => {
+            Err(perrs) => {
+                for e in perrs.into_iter() {
+                    let report = Report::new(ReportKind::Error, format!("Parse Error: {:?}", e))
+                        .lines_before(1)
+                        .lines_after(1)
+                        .highlight(e.location, format!("parse error here"));
+
+                    let mut s = String::new();
+                    report
+                        .write(&source, &mut s)
+                        .expect("write to string works");
+                    eprintln!("{}", s);
+                }
+                /*
                 let report = Report::new(ReportKind::Error, format!("Parse Error: {:?}", perr))
                     .lines_before(1)
                     .lines_after(1)
@@ -83,6 +96,7 @@ pub fn sources<S: AsRef<Path>>(dir: S) -> Vec<(Namespace, Source, Module)> {
                     .write(&source, &mut s)
                     .expect("write to string works");
                 eprintln!("{}", s);
+                */
                 exit(1)
             }
             Ok(module) => (n, source, module),
@@ -91,7 +105,7 @@ pub fn sources<S: AsRef<Path>>(dir: S) -> Vec<(Namespace, Source, Module)> {
 }
 
 pub fn compile(
-    env: &mut Environment<'_, '_>,
+    env: &mut Environment,
     modules: Vec<(Namespace, Source, Module)>,
 ) -> werbolg_compile::CompilationUnit<Literal> {
     let compilation_params = werbolg_compile::CompilationParams {
