@@ -85,18 +85,6 @@ pub fn sources<S: AsRef<Path>>(dir: S) -> Vec<(Namespace, Source, Module)> {
                         .expect("write to string works");
                     eprintln!("{}", s);
                 }
-                /*
-                let report = Report::new(ReportKind::Error, format!("Parse Error: {:?}", perr))
-                    .lines_before(1)
-                    .lines_after(1)
-                    .highlight(perr.location, format!("parse error here"));
-
-                let mut s = String::new();
-                report
-                    .write(&source, &mut s)
-                    .expect("write to string works");
-                eprintln!("{}", s);
-                */
                 exit(1)
             }
             Ok(module) => (n, source, module),
